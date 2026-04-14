@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Nova Minds Hostel ERP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+
+:root{
+--primary:#2563eb;
+--secondary:#22c55e;
+--dark:#0f172a;
+--light:#f1f5f9;
+--glass:rgba(255,255,255,0.15);
+}
+
+body{
+    
+background:linear-gradient(135deg,#3b82f6,#22c55e);
+min-height:100vh;
+color:#fff;
+}
+
+
+
+/* LOGIN */
+
+.login-container{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.login-box{
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(15px);
+padding:35px;
+border-radius:20px;
+width:350px;
+box-shadow:0 15px 35px rgba(0,0,0,0.3);
+}
+
+.login-box h2{
+text-align:center;
+margin-bottom:20px;
+font-weight:600;
+}
+
+input,select{
+width:100%;
+padding:10px;
+margin:10px 0;
+border-radius:10px;
+border:none;
+outline:none;
+}
+
+button{
+width:100%;
+padding:10px;
+border:none;
+border-radius:10px;
+background:var(--primary);
+color:white;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#1d4ed8;
+transform:scale(1.05);
+}
+
+/* APP */
+
+.app{display:none}
+
+.sidebar{
+position:fixed;
+width:230px;
+height:100%;
+background:linear-gradient(180deg,#0f172a,#1e293b);
+padding-top:30px;
+}
+
+.sidebar h3{
+text-align:center;
+margin-bottom:30px;
+}
+
+.sidebar a{
+display:flex;
+align-items:center;
+gap:12px;
+padding:12px 20px;
+color:#fff;
+text-decoration:none;
+transition:0.3s;
+}
+
+.sidebar a:hover{
+background:var(--primary);
+padding-left:30px;
+}
+
+.main{
+margin-left:230px;
+padding:30px;
+color:#000;
+}
+
+.header{
+background:white;
+padding:15px 20px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+margin-bottom:20px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+/* MODAL */
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.6);
+display:flex;
+align-items:center;
+justify-content:center;
+opacity:0;
+pointer-events:none;
+transition:0.4s;
+}
+
+.modal.active{
+opacity:1;
+pointer-events:auto;
+}
+
+.modal-box{
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(20px);
+padding:30px;
+border-radius:20px;
+width:350px;
+color:white;
+animation:pop 0.4s ease;
+}
+
+@keyframes pop{
+from{transform:scale(0.7);opacity:0}
+to{transform:scale(1);opacity:1}
+}
+
+/* Floating Input */
+
+.form-group{
+position:relative;
+margin:20px 0;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+outline:none;
+}
+
+.form-group label{
+position:absolute;
+top:12px;
+left:15px;
+color:#666;
+transition:0.3s;
+pointer-events:none;
+}
+
+.form-group input:focus + label,
+.form-group input:not(:placeholder-shown) + label,
+.form-group textarea:focus + label,
+.form-group textarea:not(:placeholder-shown) + label{
+top:-8px;
+left:10px;
+font-size:12px;
+background:#2563eb;
+color:white;
+padding:2px 6px;
+border-radius:5px;
+}
+
+/* Gradient Button */
+
+.gradient-btn{
+background:linear-gradient(45deg,#2563eb,#22c55e);
+color:white;
+border:none;
+padding:10px;
+width:100%;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+}
+
+.gradient-btn:hover{
+transform:scale(1.05);
+}
+
+/* Success Animation */
+
+.success{
+text-align:center;
+font-size:40px;
+color:#22c55e;
+animation:tick 0.5s ease;
+}
+
+@keyframes tick{
+from{transform:scale(0)}
+to{transform:scale(1)}
+}
+
+
+.stat{
+font-size:28px;
+font-weight:600;
+color:var(--primary);
+}
+
+.badge{
+background:var(--secondary);
+color:white;
+padding:5px 10px;
+border-radius:20px;
+font-size:12px;
+}
+
+.section{
+display:none;
+}
+
+.section.active{
+display:block;
+}
+
+.footer{
+text-align:center;
+margin-top:30px;
+font-size:13px;
+color:#555;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="login-container" id="loginPage">
+<div class="login-box">
+<h2>Nova Minds ERP</h2>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<select id="role">
+<option>Student</option>
+<option>House Master</option>
+<option>Office Worker</option>
+<option>Chief Warden</option>
+</select>
+<button onclick="login()">Login</button>
+</div>
+</div>
+<div class="modal" id="taskModal">
+<div class="modal-box" id="modalContent"></div>
+</div>
+
+
+<!-- APP -->
+<div class="app" id="app">
+
+<div class="sidebar">
+<h3>Nova Minds</h3>
+<a onclick="show('dashboard')"><i class="fa fa-chart-line"></i>Dashboard</a>
+<a onclick="show('operations')"><i class="fa fa-list"></i>Operations</a>
+<a onclick="show('students')"><i class="fa fa-users"></i>Students</a>
+<a onclick="logout()"><i class="fa fa-right-from-bracket"></i>Logout</a>
+</div>
+
+<div class="main">
+
+<div class="header">
+<h2 id="panelTitle"></h2>
+</div>
+
+<div id="dashboard" class="section active">
+<div class="grid">
+<div class="card">
+<div class="stat" id="rooms">120</div>
+Total Rooms
+</div>
+<div class="card">
+<div class="stat" id="complaints">6</div>
+Active Complaints
+</div>
+<div class="card">
+<div class="stat" id="occupancy">78%</div>
+Occupancy Rate
+</div>
+</div>
+</div>
+
+<div id="operations" class="section">
+<div class="grid" id="ops"></div>
+</div>
+
+<div id="students" class="section">
+<div class="card">Aman – A12</div>
+<div class="card">Riya – B05</div>
+<div class="card">Masha ali – B06</div>
+<div class="card">Jignesh – B07</div>
+<div class="card">Mohit – B08</div>
+<div class="card">KUllu – B09</div>
+<div class="card">Junny – B010</div>
+<div class="card">Jack– B011</div>
+<div class="card">Mannu – B012</div>
+
+<div class="card">Halchal – A12</div>
+<div class="card">Himanshu – A13</div>
+<div class="card">Karan – A14</div>
+<div class="card">Manish – A15</div>
+<div class="card">Nikhil – A16</div>
+<div class="card">Milan – A17</div>
+<div class="card">Vrun – A18</div>
+<div class="card">Priyanka– A19</div>
+<div class="card">Reniu – A20</div>
+</div>
+
+<div class="footer">
+© 2026 Nova Minds Hostel ERP | Hackathon Project
+</div>
+
+</div>
+</div>
+
+<script>
+    let usersData = [
+{name:"Mr. Sharma", role:"House Master"},
+{name:"Office Admin", role:"Office Worker"}
+];
+
+let maintenanceData = [];
+
+function login(){
+if(!user.value || !pass.value){
+alert("Enter credentials");
+return;
+}
+loginPage.style.display="none";
+app.style.display="block";
+panelTitle.innerHTML=role.value+" Panel <span class='badge'>"+role.value+"</span>";
+loadOps(role.value);
+}
+
+function logout(){
+location.reload();
+}
+
+function show(section){
+document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+document.getElementById(section).classList.add("active");
+}
+
+function loadOps(role){
+
+let data={
+Student:["Apply Room","Raise Complaint","Attendance","Feedback"],
+"House Master":["Approve Rooms","Mark Attendance","Generate Report"],
+"Office Worker":["Add Inventory","Update Maintenance"],
+"Chief Warden":["Emergency Alert","User Management"]
+};
+
+let html="";
+data[role].forEach(task=>{
+html+=`<div class="card" onclick="openForm('${task}')">${task}</div>`;
+});
+ops.innerHTML=html;
+}
+function openForm(task){
+
+let formHTML="";
+
+if(task==="Apply Room"){
+formHTML=`
+<h3>Room Application</h3>
+
+<div class="form-group">
+<input type="number" min="1" placeholder=" " required>
+<label>Total No. of Rooms Required</label>
+</div>
+
+<div class="form-group">
+<input type="date" placeholder=" " required>
+<label>Move-in Date</label>
+</div>
+
+<button class="gradient-btn" onclick="submitForm()">Submit</button>
+`;
+}
+
+
+else if(task==="Raise Complaint"){
+formHTML=`
+<h3>Raise Complaint</h3>
+<div class="form-group">
+<input type="text" placeholder=" " required>
+<label>Issue Title</label>
+</div>
+<div class="form-group">
+<textarea placeholder=" " required></textarea>
+<label>Describe Issue</label>
+</div>
+<button class="gradient-btn" onclick="submitForm()">Submit</button>
+`;
+}
+else if(task==="Attendance"){
+
+formHTML=`
+<h3>View Attendance</h3>
+
+<div class="card" style="background:white;color:black;margin:10px 0;">
+<b>This Month Attendance</b><br><br>
+Present: 22 Days <br>
+Absent: 3 Days <br>
+Attendance Percentage: <b>88%</b>
+</div>
+
+<button class="gradient-btn" onclick="submitForm()">Close</button>
+`;
+}
+else if(task==="Feedback"){
+
+formHTML=`
+<h3>Submit Feedback</h3>
+
+<div class="form-group">
+<select>
+<option>Hostel Facilities</option>
+<option>Food Quality</option>
+<option>Maintenance</option>
+<option>Staff Behaviour</option>
+</select>
+</div>
+
+<div class="form-group">
+<textarea placeholder=" " required></textarea>
+<label>Your Feedback</label>
+</div>
+
+<button class="gradient-btn" onclick="submitForm()">Submit Feedback</button>
+`;
+}
+
+
+else if(task==="Add Inventory"){
+formHTML=`
+<h3>Add Inventory</h3>
+<div class="form-group">
+<input type="text" placeholder=" ">
+<label>Item Name</label>
+</div>
+<div class="form-group">
+<input type="number" placeholder=" ">
+<label>Quantity</label>
+</div>
+<button class="gradient-btn" onclick="submitForm()">Add Item</button>
+`;
+}
+else if(task==="User Management"){
+
+formHTML=`
+<h3>User Management</h3>
+
+<div class="form-group">
+<input type="text" id="newUserName" placeholder=" " required>
+<label>User Name</label>
+</div>
+
+<div class="form-group">
+<select id="newUserRole">
+<option>Student</option>
+<option>House Master</option>
+<option>Office Worker</option>
+<option>Chief Warden</option>
+</select>
+</div>
+
+<button class="gradient-btn" onclick="addUser()">Add User</button>
+
+<hr style="margin:20px 0">
+
+<h4>All Users</h4>
+<div id="userList"></div>
+`;
+
+modalContent.innerHTML=formHTML;
+taskModal.classList.add("active");
+
+loadUsers();
+
+return;
+}
+
+else if(task==="Update Maintenance"){
+
+formHTML=`
+<h3>Update Maintenance</h3>
+
+<div class="form-group">
+<input type="text" id="roomNo" placeholder=" " required>
+<label>Room Number</label>
+</div>
+
+<div class="form-group">
+<select id="issueType">
+<option>Electrical</option>
+<option>Plumbing</option>
+<option>Furniture</option>
+<option>Cleaning</option>
+<option>Other</option>
+</select>
+</div>
+
+<div class="form-group">
+<select id="maintenanceStatus">
+<option>Pending</option>
+<option>In Progress</option>
+<option>Completed</option>
+</select>
+</div>
+
+<button class="gradient-btn" onclick="addMaintenance()">Update</button>
+
+<hr style="margin:20px 0">
+
+<h4>Maintenance Records</h4>
+<div id="maintenanceList"></div>
+`;
+
+modalContent.innerHTML=formHTML;
+taskModal.classList.add("active");
+
+loadMaintenance();
+
+return;
+}
+
+
+else if(task==="Emergency Alert"){
+formHTML=`
+<h3>Emergency Alert</h3>
+<div class="form-group">
+<textarea placeholder=" "></textarea>
+<label>Alert Message</label>
+</div>
+<button class="gradient-btn" onclick="submitForm()">Send Alert</button>
+`;
+}
+else if(task==="Approve Rooms"){
+
+formHTML=`
+<h3>Pending Room Requests</h3>
+
+<div class="card" style="background:white;color:black;margin:10px 0;">
+<b>Aman</b><br>
+Requested Rooms: 1<br>
+Move-in: 2026-03-01<br><br>
+<button class="gradient-btn" onclick="allocateRoom('Aman')">Allocate Room</button>
+</div>
+
+<div class="card" style="background:white;color:black;margin:10px 0;">
+<b>Riya</b><br>
+Requested Rooms: 2<br>
+Move-in: 2026-03-05<br><br>
+<button class="gradient-btn" onclick="allocateRoom('Riya')">Allocate Room</button>
+</div>
+
+<div class="card" style="background:white;color:black;margin:10px 0;">
+<b>Mohit</b><br>
+Requested Rooms: 1<br>
+Move-in: 2026-03-07<br><br>
+<button class="gradient-btn" onclick="allocateRoom('Mohit')">Allocate Room</button>
+</div>
+`;
+}
+else if(task==="Mark Attendance"){
+
+let students = [
+{name:"Aman", room:"A12"},
+{name:"Riya", room:"B05"},
+{name:"Mohit", room:"B08"},
+
+];
+
+formHTML=`
+<h3>Mark Attendance</h3>
+
+<input type="text" id="searchStudent" 
+placeholder="Search Student..." 
+style="padding:10px;border-radius:10px;border:none;width:100%;margin-bottom:15px;">
+
+<div id="studentList"></div>
+`;
+
+modalContent.innerHTML=formHTML;
+taskModal.classList.add("active");
+
+let listHTML="";
+students.forEach(s=>{
+listHTML+=`
+<div class="card attendance-card" 
+data-name="${s.name.toLowerCase()}"
+style="background:white;color:black;margin:10px 0;">
+<b>${s.name}</b> - ${s.room}
+<br><br>
+<button onclick="markPresent(this)" 
+class="gradient-btn">Present</button>
+<button onclick="markAbsent(this)" 
+style="background:#ef4444;margin-top:5px;" 
+class="gradient-btn">Absent</button>
+<span class="status" 
+style="margin-left:10px;font-weight:bold;"></span>
+</div>
+`;
+});
+
+document.getElementById("studentList").innerHTML=listHTML;
+
+// Attach search listener AFTER modal loads
+document.getElementById("searchStudent")
+.addEventListener("keyup", filterStudents);
+
+return;
+}
+
+
+else if(task==="Generate Report"){
+
+formHTML=`
+<h3>Generate Report</h3>
+
+<div class="form-group">
+<select id="reportType">
+<option>Occupancy Report</option>
+<option>Attendance Report</option>
+<option>Complaint Report</option>
+</select>
+</div>
+
+<button class="gradient-btn" onclick="generateReport()">Generate</button>
+`;
+}
+
+
+
+
+
+modalContent.innerHTML=formHTML;
+taskModal.classList.add("active");
+}
+
+function submitForm(){
+modalContent.innerHTML=`<div class="success">✔</div><p style="text-align:center">Submitted Successfully</p>`;
+setTimeout(()=>taskModal.classList.remove("active"),1500);
+}
+function allocateRoom(name){
+
+modalContent.innerHTML = `
+<div class="success">✔</div>
+<p style="text-align:center">
+Room Successfully Allocated to <b>${name}</b>
+</p>
+`;
+
+setTimeout(()=>taskModal.classList.remove("active"),1500);
+}
+function markPresent(btn){
+let card = btn.closest(".attendance-card");
+let status = card.querySelector(".status");
+status.innerHTML="✔ Present";
+status.style.color="green";
+}
+
+function markAbsent(btn){
+let card = btn.closest(".attendance-card");
+let status = card.querySelector(".status");
+status.innerHTML="✖ Absent";
+status.style.color="red";
+}
+
+
+
+taskModal.addEventListener("click",(e)=>{
+if(e.target.id==="taskModal"){
+taskModal.classList.remove("active");
+}
+});
+
+function generateStudentCard(name,room){
+return `
+<div class="card attendance-card" data-name="${name.toLowerCase()}" 
+style="background:white;color:black;margin:10px 0;">
+<b>${name}</b> - ${room}
+<br><br>
+<button class="gradient-btn" onclick="markPresent('${name}')">Present</button>
+<button style="background:#ef4444;margin-top:5px;" 
+class="gradient-btn" onclick="markAbsent('${name}')">Absent</button>
+</div>
+`;
+}
+function filterStudents(){
+let input = document.getElementById("searchStudent").value.toLowerCase();
+let cards = document.querySelectorAll(".attendance-card");
+
+cards.forEach(card=>{
+let name = card.getAttribute("data-name");
+card.style.display = name.includes(input) ? "block" : "none";
+});
+}
+function addMaintenance(){
+
+let room = document.getElementById("roomNo").value;
+let issue = document.getElementById("issueType").value;
+let status = document.getElementById("maintenanceStatus").value;
+
+if(!room){
+alert("Enter Room Number");
+return;
+}
+
+maintenanceData.push({
+room:room,
+issue:issue,
+status:status
+});
+
+loadMaintenance();
+
+// update complaint count if pending
+updateComplaintCount();
+
+document.getElementById("roomNo").value="";
+}
+
+function loadMaintenance(){
+
+let html="";
+
+maintenanceData.forEach((m,index)=>{
+html+=`
+<div class="card" style="background:white;color:black;margin:10px 0;">
+<b>Room:</b> ${m.room}<br>
+<b>Issue:</b> ${m.issue}<br>
+<b>Status:</b> 
+<span style="color:${m.status==="Completed"?"green":m.status==="In Progress"?"orange":"red"}">
+${m.status}
+</span>
+<br><br>
+<button class="gradient-btn" onclick="changeStatus(${index})">
+Change Status
+</button>
+</div>
+`;
+});
+
+document.getElementById("maintenanceList").innerHTML=html;
+}
+
+function changeStatus(index){
+
+let statuses=["Pending","In Progress","Completed"];
+let current = maintenanceData[index].status;
+let next = statuses[(statuses.indexOf(current)+1)%3];
+
+maintenanceData[index].status = next;
+
+loadMaintenance();
+updateComplaintCount();
+}
+
+function updateComplaintCount(){
+
+let pendingCount = maintenanceData.filter(m=>m.status==="Pending").length;
+document.getElementById("complaints").innerText = pendingCount;
+}
+function addUser(){
+
+let name = document.getElementById("newUserName").value;
+let role = document.getElementById("newUserRole").value;
+
+if(!name){
+alert("Enter User Name");
+return;
+}
+
+usersData.push({name:name, role:role});
+
+document.getElementById("newUserName").value="";
+
+loadUsers();
+}
+
+function loadUsers(){
+
+let html="";
+
+usersData.forEach((u,index)=>{
+html+=`
+<div class="card" style="background:white;color:black;margin:10px 0;">
+<b>${u.name}</b><br>
+Role: ${u.role}
+<br><br>
+<button class="gradient-btn" onclick="deleteUser(${index})">
+Delete
+</button>
+</div>
+`;
+});
+
+document.getElementById("userList").innerHTML=html;
+}
+
+function deleteUser(index){
+usersData.splice(index,1);
+loadUsers();
+}
+
+
+</script>
+
+
+</body>
+</html>
